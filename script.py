@@ -14,7 +14,7 @@ class Script1:
         chrome_options = Options()
         chrome_options.add_argument("--disable-gpu")  
         chrome_options.add_argument("--no-sandbox")
-        chrome_options.add_argument("headless")  
+        #chrome_options.add_argument("headless")  
         
         self.driver = webdriver.Chrome(options=chrome_options)
     
@@ -38,8 +38,10 @@ class Script1:
                 try:
                     time.sleep(5)
                     print("[INFO] ABRIENDO NUEVA VENTANA ESPERANDO...")
+                    print(f"[INFO] ABRIENDO {link.text} ")
                     href = link.get_attribute("href")
                     self.driver.execute_script(f"window.open('{href}', '_blank');")
+                    self.version()
                 except NoSuchElementException as e:
                     print("[ERROR ELEMENTO] OCURRIO UN ERROR AL ENCONTRAR ELEMENTOS ",e)
         except Exception as e:
@@ -48,11 +50,17 @@ class Script1:
             pass
     
     def version(self):
-        elemento = self.driver.find_element(By.LINK_TEXT,"Versión")
-        elemento.click()
-        time.sleep(5)
-        print("[INFO] CLICKEANDO EN EL BOTON (VERSION)")
-        
+        lista_versiones = self.driver.find_element(By.CLASS_NAME,"ts__step__dropdown")
+        links = lista_versiones.find_elements(By.CLASS_NAME,"ds__link")
+        for link in links:
+            try:
+                time.sleep(3)
+                print(f"[INFO] ABRIENDO {link.text} ")
+                href = link.get_attribute("href")
+                self.driver.execute_script(f"window.open('{href}', '_blank');")
+            except NoSuchElementException as e:
+                print("[ERROR] OCURRIO UN ERROR AL LISTAR LAS VERSIONES ",e)
+            raise NoSuchElementException("ERROR AL INTENTAR ACCEDER A ",link.text)
 
 
 url_base = "https://www.michelin.cl/auto/browse-tyres/by-vehicle"
